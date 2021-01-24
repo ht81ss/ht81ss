@@ -1,0 +1,66 @@
+Sub macro1()
+
+Dim target As Range
+Dim mapSelection As Range
+Dim MyRange As Range
+
+Set MyRange = Range("A5:M100")
+Set mapSelection = Range("A5:M100")
+
+Dim i As Long
+Dim MaxCol As Long
+
+MaxCol = Cells(5, 2).End(xlToRight).Column
+'MsgBox MaxCol
+
+
+For i = MaxCol To 1 Step -1
+
+    If Cells(5, i).Value = "XXXX" Then Columns(i).Delete Shift:=xlToLeft
+
+Next i
+    
+    For Each target In mapSelection
+        
+        If target.Value <= 0.5 Then target.Value = ""
+
+    Next target
+    
+MyRange.SpecialCells(xlCellTypeBlanks).Delete Shift:=xlShiftUp
+
+End Sub
+Sub aaa()
+
+Dim i As Long
+Dim MaxCol As Long
+
+MaxCol = Cells(5, 2).End(xlToRight).Column
+'MsgBox MaxCol
+
+
+For i = MaxCol To 1 Step -1
+    If Cells(5, i).Value = "XXXX" Then Columns(i).Delete Shift:=xlToLeft
+    If Cells(5, i).Value = "XXXX" Then Columns(i).Delete Shift:=xlToLeft
+Next i
+
+End Sub
+
+Sub macrod1()
+
+Dim target As Range
+Dim mapSelection As Range
+Dim MyRange As Range
+
+Set MyRange = Range("A5:M100")
+Set mapSelection = Range("A5:M100")
+    
+    For Each target In mapSelection
+        
+        If target.Value <= 0.5 Then target.Value = ""
+
+    Next target
+    
+MyRange.SpecialCells(xlCellTypeBlanks).Delete Shift:=xlShiftUp
+
+End Sub
+
