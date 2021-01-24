@@ -64,3 +64,9 @@ MyRange.SpecialCells(xlCellTypeBlanks).Delete Shift:=xlShiftUp
 
 End Sub
 
+Dim sh As Object
+　Set sh = ActiveSheet
+　ActiveSheet.Copy After:=Sheets(Sheets.Count)
+　sh.Select
+End Sub
+
