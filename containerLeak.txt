@@ -1,0 +1,64 @@
+import numpy as np
+import matplotlib.pyplot as plt
+
+# 代表値
+initial_pressure_A = 50  # 真空容器Aの初期圧力 [Pa]
+initial_pressure_B = 10  # 真空容器Bの初期圧力 [Pa]
+volume_A = 1.0  # 真空容器Aの容積 [m^3]
+volume_B = 0.01  # 真空容器Bの容積 [m^3]
+leak_rate_constant = 1e-6  # リーク率の定数 [m^3/s/Pa]
+
+# シミュレーションパラメータ
+time_step = 1.0  # 時間ステップ [s]
+simulation_time = 360000  # シミュレーション時間 [s]
+num_steps = int(simulation_time / time_step)
+
+# シミュレーション
+pressure_A = np.zeros(num_steps + 1)
+pressure_B = np.zeros(num_steps + 1)
+time = np.zeros(num_steps + 1)
+
+pressure_A[0] = initial_pressure_A
+pressure_B[0] = initial_pressure_B
+
+for step in range(num_steps):
+    pressure_difference = pressure_A[step] - pressure_B[step]
+    if pressure_difference > 0:
+        leaked_moles = leak_rate_constant * pressure_difference * time_step * volume_A / (8.314 * 293.15)  # 理想気体の状態方程式を使用
+        pressure_A[step + 1] = pressure_A[step] - leaked_moles * (8.314 * 293.15) / volume_A
+        pressure_B[step + 1] = pressure_B[step] + leaked_moles * (8.314 * 293.15) / volume_B
+    else:
+        pressure_A[step + 1] = pressure_A[step]
+        pressure_B[step + 1] = pressure_B[step]
+    time[step + 1] = time[step] + time_step
+
+# グラフの表示
+plt.plot(time, pressure_A, label='Pressure in Vacuum Container A')
+plt.plot(time, pressure_B, label='Pressure in Vacuum Container B')
+plt.xlabel('Time [s]')
+plt.ylabel('Pressure [Pa]')
+plt.legend()
+plt.grid()
+plt.show()
+
+final_pressure_A = pressure_A[-1]
+final_pressure_B = pressure_B[-1]
+
+print("Final pressure in Vacuum Container A: {:.5e} Pa".format(final_pressure_A))
+print("Final pressure in Vacuum Container B: {:.5e} Pa".format(final_pressure_B))
+
+
+# 近似的な圧力の等しさを判断するための許容範囲
+tolerance = 1e-6
+
+equal_pressure_time = -1
+
+for step in range(num_steps + 1):
+    if abs(pressure_A[step] - pressure_B[step]) < tolerance:
+        equal_pressure_time = time[step]
+        break
+
+if equal_pressure_time != -1:
+    print("Time when pressures in Vacuum Container A and B become approximately equal: {:.2f} s".format(equal_pressure_time))
+else:
+    print("Pressures in Vacuum Container A and B did not become approximately equal within the simulation time.")
