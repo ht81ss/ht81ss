@@ -20,13 +20,16 @@ $startDate = Get-Date "2025-05-01"
 $endDate   = Get-Date "2025-05-05"
 
 # ファイルのプレフィックス（冒頭部分）を設定
-$filePrefixes = @("apache_log-", "system_log-", "other_log-")  # プレフィックスの末尾にハイフンを追加
+$filePrefixes = @("apache_log-", "system_log-", "other_log-")
+
+# SSL/TLSバージョンの指定（必須）
+[System.Net.ServicePointManager]::SecurityProtocol = [System.Net.SecurityProtocolType]::Tls12
 
 # 各日付についてファイルをダウンロード
 for ($date = $startDate; $date -le $endDate; $date = $date.AddDays(1)) {
     $ymd = $date.ToString("yyyyMMdd")
     foreach ($prefix in $filePrefixes) {
-        $fileName = "$prefix$ymd"  # プレフィックスと日付を結合
+        $fileName = "$prefix$ymd"
         $url = "$baseUrl/$fileName"
         $outFile = Join-Path $saveDir $fileName
         Invoke-WebRequest -Uri $url -OutFile $outFile -Credential $cred
