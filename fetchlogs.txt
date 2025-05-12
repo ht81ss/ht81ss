@@ -1,0 +1,34 @@
+# ユーザー名とパスワードをセット
+$user = "your_username"
+$pass = "your_password"
+
+# 認証情報を作成
+$secpass = ConvertTo-SecureString $pass -AsPlainText -Force
+$cred = New-Object System.Management.Automation.PSCredential ($user, $secpass)
+
+# ダウンロード元URL
+$baseUrl = "https://192.168.2.221/downloads"
+
+# 保存先フォルダ（存在しない場合は作成）
+$saveDir = "C:\Logs\Download"
+if (!(Test-Path $saveDir)) {
+    New-Item -ItemType Directory -Path $saveDir | Out-Null
+}
+
+# 対象日付の範囲
+$startDate = Get-Date "2025-05-01"
+$endDate   = Get-Date "2025-05-05"
+
+# ファイルのプレフィックス（冒頭部分）を設定
+$filePrefixes = @("apache_log-", "system_log-", "other_log-")  # プレフィックスの末尾にハイフンを追加
+
+# 各日付についてファイルをダウンロード
+for ($date = $startDate; $date -le $endDate; $date = $date.AddDays(1)) {
+    $ymd = $date.ToString("yyyyMMdd")
+    foreach ($prefix in $filePrefixes) {
+        $fileName = "$prefix$ymd"  # プレフィックスと日付を結合
+        $url = "$baseUrl/$fileName"
+        $outFile = Join-Path $saveDir $fileName
+        Invoke-WebRequest -Uri $url -OutFile $outFile -Credential $cred
+    }
+}
